@@ -9,8 +9,12 @@
   ],
   "routes": [
     {
-      "src": "/.*",
+      "src": "/mochawesome",
       "dest": "/mochawesome.html"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
     }
   ]
 }
