@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
+  "devDependencies": {
     "mocha": "^11.1.0",
     "mochawesome": "^7.1.3",
-    "selenium-webdriver": "^4.30.0"
+    "selenium-webdriver": "^4.31.0"
   }
 }

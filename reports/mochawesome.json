@@ -1,0 +1,280 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 8,
+    "passes": 7,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-04-07T09:28:18.779Z",
+    "end": "2025-04-07T09:29:17.634Z",
+    "duration": 58855,
+    "testsRegistered": 8,
+    "passPercent": 87.5,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "c05eb32c-9981-47bc-9f04-20a7f189f9fa",
+      "title": "",
+      "fullFile": "D:\\laragon\\www\\Porto Qa\\loista\\test\\navbar\\navbar.js",
+      "file": "\\test\\navbar\\navbar.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "0d00387b-d715-40c8-b41e-6865424267d7",
+          "title": "Tes Fitur Navbar Menu",
+          "fullFile": "D:\\laragon\\www\\Porto Qa\\loista\\test\\navbar\\navbar.js",
+          "file": "\\test\\navbar\\navbar.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Tes Fitur Navbar Menu\"",
+              "fullTitle": "Tes Fitur Navbar Menu \"before all\" hook in \"Tes Fitur Navbar Menu\"",
+              "timedOut": false,
+              "duration": 1377,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser(\"chrome\").build();",
+              "err": {},
+              "uuid": "3b488819-9beb-4af6-97c0-ebdf589d3fbb",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Tes Fitur Navbar Menu\"",
+              "fullTitle": "Tes Fitur Navbar Menu \"after all\" hook in \"Tes Fitur Navbar Menu\"",
+              "timedOut": false,
+              "duration": 140,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "95b8b47b-8f72-44ca-a183-a8d32967960c",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "Verifikasi menu Products dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Products dan navigasi",
+              "timedOut": false,
+              "duration": 8836,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "5ea1a4c0-a1a8-4623-bc4a-fea37f7ff8a3",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Company Profile dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Company Profile dan navigasi",
+              "timedOut": false,
+              "duration": 12878,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "5b6689fc-5f66-4f2d-965b-cde16629e94e",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Our Projects dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Our Projects dan navigasi",
+              "timedOut": false,
+              "duration": 4275,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "a8150d76-133f-4df6-baba-e8797a194b1c",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Gallery dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Gallery dan navigasi",
+              "timedOut": false,
+              "duration": 4294,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "c04f522b-8829-475d-925c-d3309589717c",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Step Order dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Step Order dan navigasi",
+              "timedOut": false,
+              "duration": 7597,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "6dd803e6-bc72-44af-a655-691b16a7f3ba",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Info & Promotions dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Info & Promotions dan navigasi",
+              "timedOut": false,
+              "duration": 4361,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "a871c40a-c826-4183-9d68-16fdc59f55ac",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Contact Us dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Contact Us dan navigasi",
+              "timedOut": false,
+              "duration": 4474,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {},
+              "uuid": "f7211e78-d446-4132-91e3-0325c7607b80",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Verifikasi menu Whatsapp Us dan navigasi",
+              "fullTitle": "Tes Fitur Navbar Menu Verifikasi menu Whatsapp Us dan navigasi",
+              "timedOut": false,
+              "duration": 10611,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Buka halaman utama\nawait driver.get(\"https://loista.co.id/home\");\nawait driver.manage().setTimeouts({ implicit: 10000 });\n// 2. Temukan menu berdasarkan nama dan klik untuk memastikan fungsionalitasnya\nconst menuButton = await driver.findElement(By.linkText(menu.name));\n// 3. Jika elemen terhalang, scroll untuk memastikan elemen bisa diklik\nawait driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", menuButton);\n// 4. Tunggu hingga tombol dapat diklik dan klik\nawait driver.wait(until.elementIsVisible(menuButton), 10000); // Waktu tunggu lebih lama\nawait driver.executeScript(\"arguments[0].click();\", menuButton); // Klik menggunakan JavaScript untuk menghindari masalah elemen yang terhalang\n// 5. Jika menu adalah \"Products\", lanjutkan untuk klik \"Design and Builds\"\nif (menu.name === \"Products\") {\n  // Menunggu dan klik \"Design and Builds\"\n  const designAndBuildsButton = await driver.findElement(By.partialLinkText(\"Design\"));\n  await driver.executeScript(\"arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });\", designAndBuildsButton);\n  await driver.wait(until.elementIsVisible(designAndBuildsButton), 10000);\n  await designAndBuildsButton.click();\n}\nif (menu.name === \"Whatsapp Us\") {\n  // Find menu by exact text match first\n  const menuButton = await driver.findElement(By.xpath(\"//a[text()='Whatsapp Us']\"));\n  await menuButton.click();\n  \n  // Then find and click any WhatsApp link\n  const whatsappLink = await driver.findElement(By.xpath(\"//a[contains(@href, 'wa.me')]\"));\n  await whatsappLink.click();\n  return;\n}\n// 6. Tunggu sampai URL mengandung bagian yang sesuai\nawait driver.wait(until.urlContains(menu.urlPart), 10000); // Perpanjang waktu tunggu\n// 7. Verifikasi apakah URL mengandung bagian yang sesuai\nconst currentUrl = await driver.getCurrentUrl();\nconsole.log(`URL saat ini: ${currentUrl}`);\nassert.ok(currentUrl.includes(menu.urlPart), `URL harus mengandung '${menu.urlPart}' setelah klik menu ${menu.name}.`);\n// 8. Scroll halaman ke bawah untuk memverifikasi bahwa halaman dimuat sepenuhnya\nawait driver.executeScript(\"window.scrollTo(0, document.body.scrollHeight);\");\n// 9. Tunggu beberapa detik agar halaman sepenuhnya dimuat\nawait driver.sleep(2000); // Tunggu agar halaman sepenuhnya dimuat\n// 10. Scroll halaman ke atas untuk memverifikasi bahwa halaman dapat digulir ke atas\nawait driver.executeScript(\"window.scrollTo(0, 0);\");\n// 11. Ambil screenshot setelah interaksi dengan navbar\nconst screenshot = await driver.takeScreenshot();\nconst folderPath = \"screenshots\";\nif (!fs.existsSync(folderPath)) {\n  fs.mkdirSync(folderPath);\n}\nfs.writeFileSync(`${folderPath}/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`, screenshot, \"base64\");\nconsole.log(`📸 Screenshot menu ${menu.name} disimpan di screenshots/screenshot-${menu.name.replace(/\\s+/g, \"-\").toLowerCase()}.png`);",
+              "err": {
+                "message": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"link text\",\"selector\":\"Whatsapp Us\"}\n  (Session info: chrome=134.0.6998.179)",
+                "estack": "NoSuchElementError: no such element: Unable to locate element: {\"method\":\"link text\",\"selector\":\"Whatsapp Us\"}\n  (Session info: chrome=134.0.6998.179)\n    at Object.throwDecodedError (node_modules\\selenium-webdriver\\lib\\error.js:523:15)\n    at parseHttpResponse (node_modules\\selenium-webdriver\\lib\\http.js:524:13)\n    at Executor.execute (node_modules\\selenium-webdriver\\lib\\http.js:456:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async Driver.execute (node_modules\\selenium-webdriver\\lib\\webdriver.js:745:17)\n    at async Context.<anonymous> (test\\navbar\\navbar.js:36:26)",
+                "diff": null
+              },
+              "uuid": "5eda9dd0-a305-469d-a3f8-0f69626e5d7f",
+              "parentUUID": "0d00387b-d715-40c8-b41e-6865424267d7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "5ea1a4c0-a1a8-4623-bc4a-fea37f7ff8a3",
+            "5b6689fc-5f66-4f2d-965b-cde16629e94e",
+            "a8150d76-133f-4df6-baba-e8797a194b1c",
+            "c04f522b-8829-475d-925c-d3309589717c",
+            "6dd803e6-bc72-44af-a655-691b16a7f3ba",
+            "a871c40a-c826-4183-9d68-16fdc59f55ac",
+            "f7211e78-d446-4132-91e3-0325c7607b80"
+          ],
+          "failures": [
+            "5eda9dd0-a305-469d-a3f8-0f69626e5d7f"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 57326,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 60000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "11.1.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "./reports",
+        "json": "true",
+        "reportName": "carouselReport"
+      },
+      "version": "6.2.0"
+    }
+  }
+}
